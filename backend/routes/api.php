@@ -20,3 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/note-book/create', [NotebookController::class, 'create']);
+Route::post('/note-book/read', [NotebookController::class, 'read']);
