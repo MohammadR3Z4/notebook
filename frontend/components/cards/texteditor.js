@@ -4,7 +4,7 @@ import '../../styles/texteditor.css'
 import TextAlign from '@tiptap/extension-text-align'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const MenuBar = ({ editor }) => {
   if (!editor) {
@@ -52,7 +52,7 @@ const MenuBar = ({ editor }) => {
   )
 }
 
-export default function Tiptap({ onChange }) {
+export default function Tiptap({ onChange, text }) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -60,6 +60,7 @@ export default function Tiptap({ onChange }) {
         types: ['heading', 'paragraph'],
       }),
     ],
+    content: text || "",
     editorProps: {
       attributes: {
         class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none',
@@ -70,6 +71,13 @@ export default function Tiptap({ onChange }) {
       if (onChange) onChange(html)
     },
   })
+
+  useEffect(() => {
+    if (editor && text !== editor.getHTML()) {
+      editor.commands.setContent(text);
+    }
+  }, [text, editor]);
+  
 
   return (
     <>

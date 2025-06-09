@@ -1,29 +1,21 @@
-import Tiptap from "@/components/cards/texteditor";
-import { useState } from "react";
 import Layout from "@/components/layout/layout";
+import Tiptap from "@/components/cards/texteditor";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { craeteNoteBook } from "@/components/api/api";
-import { useRouter } from 'next/navigation';
+import { showNotebook } from "@/components/api/api";
+import Modal from "@/components/layout/modal";
 
-export default function Create() {
+export default function Show({ book }) {
   const [editorContent, setEditorContent] = useState("");
-  const router = useRouter();
-
-  const submitHandler = async (data) => {
-    const res = await craeteNoteBook(data);
-    console.log(res)
-    
-    if(res.code == 200) {
-      router.push('/notebooks?result=add-success');
-    }
-  };
+  const [text, setText] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const formik = useFormik({
     initialValues: {
       title: "",
       description: "",
-      file: ""
+      file: "",
     },
     validationSchema: Yup.object({
       title: Yup.string()
@@ -33,21 +25,32 @@ export default function Create() {
         .max(30, "Must be 20 characters or less")
         .required("Required"),
     }),
-    onSubmit: (values) => {
-      const data = {
-        title: values.title,
-        description: values.description,
-        file: values.file,
-        text: editorContent,
-      };
-      submitHandler(data);
-    },
   });
+
+  useEffect(() => {
+    if (book) {
+      setText(book.text);
+      formik.setValues({
+        title: book.title || "",
+        description: book.description || "",
+      });
+    }
+    console.log(book);
+  }, [book]);
+
   return (
+    <>
+      {showModal ? <Modal showModal={showModal} setShowModal={setShowModal} id={book.id} /> : null}
     <Layout title="create" showFooter={false}>
       <div className="bg-gray-50 dark:bg-gray-900 flex justify-center w-full p-14">
         <form className="w-full flex justify-center">
           <div className="flex flex-col md:w-1/2 w-full">
+            <div className="mb-9">
+              <h1 className=" text-2xl block mb-2 font-medium text-gray-900 dark:text-white">
+                {" "}
+                Notebook {book?.id}{" "}
+              </h1>
+            </div>
             <div className="mb-5">
               <label
                 htmlFor="title"
@@ -99,10 +102,8 @@ export default function Create() {
                 className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                 id="file_input"
                 type="file"
-                name="file"
-                onChange={(event) => {
-                  formik.setFieldValue("file", event.currentTarget.files[0].name);
-                }}
+                value={formik.values.file}
+                onChange={formik.handleChange}
               />
             </div>
             <div className="text-editor-container text-white grow">
@@ -113,21 +114,53 @@ export default function Create() {
                 Text :
               </label>
               <div className="bg-gray-700 p-2.5 rounded-lg h-full">
-                <Tiptap onChange={(html) => setEditorContent(html)} />
+                <Tiptap
+                  onChange={(html) => setEditorContent(html)}
+                  text={text}
+                />
               </div>
             </div>
-            <div>
+            <div className="flex md:flex-nowrap flex-wrap">
               <button
                 onClick={formik.handleSubmit}
                 className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 rounded-lg  px-5 py-2.5 text-center me-2 mb-2 mt-16 cursor-pointer w-full text-xl font-bold"
               >
                 {" "}
-                Submit{" "}
+                Update{" "}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowModal(!showModal)}
+                className="text-white bg-gradient-to-br from-red-600 to-pink-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 rounded-lg  px-5 py-2.5 text-center me-2 mb-2 mt-4 md:mt-16 cursor-pointer w-full text-xl font-bold"
+              >
+                {" "}
+                Delete{" "}
               </button>
             </div>
           </div>
         </form>
       </div>
     </Layout>
+    </>
   );
+}
+
+export async function getServerSideProps({ params }) {
+  try {
+    const book = await showNotebook(params.slug);
+    console.log(book);
+    if (!book.id) {
+      return { notFound: true };
+    }
+
+    return {
+      props: {
+        book,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
 }

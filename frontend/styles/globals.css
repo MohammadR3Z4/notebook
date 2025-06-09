@@ -12,6 +12,9 @@
     --color-primary-800: #1e40af;
     --color-primary-900: #1e3a8a;
     --color-primary-950: #172554;
+
+    /* modal bg */
+    --color-modal-bg: #1E1E1E4D;
 }
 
 html, body {
