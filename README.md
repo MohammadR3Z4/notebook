@@ -16,10 +16,13 @@ The frontend is built using **Next.js**, and the backend RESTful API is powered 
 
 ## 📁 Project Structure 
 
+```
 notebook/
 │
 ├── frontend/ # Next.js application
-└── backend/ # Laravel 
+└── backend/ # Laravel
+
+```
 
 
 ## ✨ Features
