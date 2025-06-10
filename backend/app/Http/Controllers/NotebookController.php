@@ -9,20 +9,23 @@ use Illuminate\Support\Facades\Log;
 
 class NotebookController extends Controller
 {
-    public function index() {
-        $notebooks = notebook::orderBy('id' , "desc")->get();
+    public function index()
+    {
+        $notebooks = notebook::orderBy('id', "desc")->get();
 
         return $this->successResponse(json_decode($notebooks), 200);
     }
 
-    public function show($id) {
+    public function show($id)
+    {
         $book = notebook::findOrFail($id);
 
         return $this->successResponse(json_decode($book), 200);
     }
 
-    public function store(Request $request){
-        
+    public function store(Request $request)
+    {
+
         // $validator = Validator::make($request->all(), [
         //     'title' => ['required'],
         //     'description' => ['required'],
@@ -41,14 +44,30 @@ class NotebookController extends Controller
         $notebook->text = $data["text"];
         $notebook->save();
 
-        $response = ["result" => "success" , "code" => "200"];
+        $response = ["result" => "success", "code" => "200"];
         return $this->successResponse($response, 200);
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         notebook::destroy($id);
 
-        $response = ["result" => "success" , "desc" => "record $id successfully deleted" ,"code" => "200"];
+        $response = ["result" => "success", "desc" => "record $id successfully deleted", "code" => "200"];
+        return $this->successResponse($response, 200);
+    }
+
+    public function update($id, Request $request)
+    {
+        $data = $request->input('data');
+
+        $notebook = notebook::findOrFail($id);
+        $notebook->update([
+            'title' => $data['title'] ?? '',
+            'description' => $data['description'] ?? '',
+            'text' => $data['text'] ?? ''
+        ]);
+
+        $response = ["result" => "success", "desc" => "record $id successfully updated", "code" => "200"];
         return $this->successResponse($response, 200);
     }
 }

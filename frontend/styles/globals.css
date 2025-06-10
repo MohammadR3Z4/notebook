@@ -23,6 +23,7 @@ html, body {
     height: 100%;
 }
 
+
 .body {
     display: flex;
     flex-direction: column;
@@ -39,4 +40,16 @@ main {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+}
+
+.header-link {
+    color: #99a1af;
+}
+
+.header-link:hover {
+    color: #fff;
+}
+
+.header-link.active {
+    color: #fff;
 }

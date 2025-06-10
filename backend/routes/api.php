@@ -23,3 +23,4 @@ Route::get('/note-book', [NotebookController::class, 'index']);
 Route::get('/note-book/{id}', [NotebookController::class, 'show']);
 Route::delete('/note-book/{id}', [NotebookController::class, 'delete']);
 Route::post('/note-book', [NotebookController::class, 'store']);
+Route::put('/note-book/{id}', [NotebookController::class, 'update']);

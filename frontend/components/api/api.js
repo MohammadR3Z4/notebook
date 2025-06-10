@@ -39,3 +39,13 @@ export const deleteNoteBook = async (id) => {
     throw error;
   }
 };
+
+export const updateNoteBook = async (id, data) => {
+  try {
+    const response = await networkApi.put(`/note-book/${id}` , {data});
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

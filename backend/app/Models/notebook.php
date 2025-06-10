@@ -12,4 +12,7 @@ class notebook extends Model
 
     // define table
     protected $table = "notebooks";
+
+    // access to chanhge 
+    protected $fillable = ['title', 'description', 'text'];
 }
