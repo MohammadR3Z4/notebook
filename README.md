@@ -53,19 +53,22 @@ notebook/
 ```bash
 git clone https://github.com/MohammadR3Z4/notebook.git
 cd notebook
+```bash
 
 ### 🖥️ Frontend (Next.js)
-
 ```bash
 cd frontend
 npm install
 npm run dev
+```bash
 
 ### 🖥️ Backend (Laravel)
 
+```bash
 cd backend
 composer install
 cp .env.example .env
 php artisan key:generate
 php artisan migrate
 php artisan serve
+```bash
