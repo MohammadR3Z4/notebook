@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotebookController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,3 +25,6 @@ Route::get('/note-book/{id}', [NotebookController::class, 'show']);
 Route::delete('/note-book/{id}', [NotebookController::class, 'delete']);
 Route::post('/note-book', [NotebookController::class, 'store']);
 Route::put('/note-book/{id}', [NotebookController::class, 'update']);
+
+// user
+Route::post('/user', [UserController::class, 'store']);

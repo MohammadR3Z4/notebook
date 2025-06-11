@@ -49,3 +49,9 @@ export const updateNoteBook = async (id, data) => {
     throw error;
   }
 };
+
+export const createUser = async (data) => {
+  const response = await networkApi.post(`/user` , {data});
+
+  return response.data;
+};
