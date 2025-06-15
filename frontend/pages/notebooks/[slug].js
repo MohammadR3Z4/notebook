@@ -60,8 +60,6 @@ export default function Show({ book }) {
         description: book.description || "",
       });
     }
-    console.log("book : " + book.text);
-    console.log("editorContent : " + editorContent);
   }, [book]);
 
   return (

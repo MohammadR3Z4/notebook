@@ -51,7 +51,19 @@ export const updateNoteBook = async (id, data) => {
 };
 
 export const createUser = async (data) => {
-  const response = await networkApi.post(`/user` , {data});
+  const response = await networkApi.post(`/user/register` , {data});
+
+  return response.data;
+};
+
+export const loginUser = async (data) => {
+  const response = await networkApi.post(`/user/login` , data);
+
+  return response.data;
+};
+
+export const logoutUser = async (data) => {
+  const response = await networkApi.post(`/user/logout` , data);
 
   return response.data;
 };

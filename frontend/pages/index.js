@@ -1,6 +1,13 @@
 import Layout from "@/components/layout/layout";
+import { useEffect } from "react";
 
 export default function Home() {
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log("Token:", token);
+    console.log("localStorage:", localStorage);
+  }, []);
+
   return (
     <Layout title="Home">
       <div className="bg-image-main bg-center bg-no-repeat bg-cover flex justify-center items-center w-full">

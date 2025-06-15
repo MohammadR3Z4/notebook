@@ -1,10 +1,62 @@
+import { loginUser } from "@/components/api/api";
 import Alert from "@/components/layout/alert";
 import Layout from "@/components/layout/layout";
+import { useFormik } from "formik";
 import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import * as Yup from "yup";
 
 export default function Login() {
+  const [errorType, setErrorType] = useState();
   const searchParams = useSearchParams();
   const response = searchParams.get("response");
+
+  const submitHandler = async (data) => {
+    try {
+      const res = await loginUser(JSON.stringify(data));
+
+      console.log('res : ' + res.httpCode)
+      if (res.token) {
+        localStorage.setItem("auth_token", res.token);
+        localStorage.setItem("user", JSON.stringify(res.user));
+
+        window.location.href = "/";
+      }
+    } catch (err) {
+      console.log("err : " + err)
+      console.log("err : " + JSON.stringify(err))
+      if (err.httpCode === 404) {
+        setErrorType(() => "UserNotFound");
+      } else if (err.httpCode === 401) {
+        setErrorType(() => "IncorrectPassword");
+      } else {
+        alert("Server Error! Please Try again Later");
+      }
+    }
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: Yup.object({
+      email: Yup.string().required("Required").email("Enter a valid Email"),
+      password: Yup.string()
+        .required("Required")
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+          "Enter a valid Password"
+        ),
+    }),
+    onSubmit: (values) => {
+      const data = {
+        email: values.email,
+        password: values.password,
+      };
+      submitHandler(data);
+    },
+  });
   return (
     <Layout showFooter={false}>
       <section className="bg-gray-50 dark:bg-gray-900 w-full">
@@ -14,12 +66,25 @@ export default function Login() {
               <Alert type="success" text="User Created SuccessFully" />
             </div>
           )}
+          {errorType == "UserNotFound" && (
+            <div className="md:w-1/4 w-full">
+              <Alert type="error" text="User not found. <a href='/register' className='font-medium text-blue-600 hover:underline' > Register </a>" />
+            </div>
+          )}
+          {errorType == "IncorrectPassword" && (
+            <div className="md:w-1/4 w-full">
+              <Alert type="error" text="Incorrect Password! Try again!" />
+            </div>
+          )}
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                 Sign in to your account
               </h1>
-              <form className="space-y-4 md:space-y-6" action="#">
+              <form
+                className="space-y-4 md:space-y-6"
+                onSubmit={formik.handleSubmit}
+              >
                 <div>
                   <label
                     htmlFor="email"
@@ -31,10 +96,17 @@ export default function Login() {
                     type="email"
                     name="email"
                     id="email"
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
                     className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="name@company.com"
                     required=""
                   />
+                  {formik.touched.email && formik.errors.email && (
+                    <div className="text-red-500 text-sm mt-2">
+                      {formik.errors.email}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label
@@ -48,9 +120,16 @@ export default function Login() {
                     name="password"
                     id="password"
                     placeholder="••••••••"
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
                     className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required=""
                   />
+                  {formik.touched.password && formik.errors.password && (
+                    <div className="text-red-500 text-sm mt-2">
+                      {formik.errors.password}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-start">
